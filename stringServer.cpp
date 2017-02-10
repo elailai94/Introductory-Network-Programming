@@ -1,11 +1,11 @@
-##==============================================================================
-## CS 454 Assignment 2
-##
-## @description: An implementation of a server program in C++
-## @author: Ah Hoe Lai
-## @userid: ahlai
-## @version: 1.0 09/02/2017
-##==============================================================================
+//=============================================================================
+// CS 454 Assignment 2
+//
+// @description: An implementation of a server program in C++
+// @author: Ah Hoe Lai
+// @userid: ahlai
+// @version: 1.0 09/02/2017
+//=============================================================================
 
 #include <iostream>
 
