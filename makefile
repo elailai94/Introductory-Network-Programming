@@ -14,8 +14,8 @@ SERVERNAME = stringServer
 
 all:
 	@echo "Compiling..."
-	${CXX} ${CXXFLAGS} -o ${CLIENTNAME} ${CLIENTNAME}.cpp
-	${CXX} ${CXXFLAGS} -o ${SERVERNAME} ${SERVERNAME}.cpp
+	${CXX} ${CXXFLAGS} -o ${CLIENTNAME} ${CLIENTNAME}.cc
+	${CXX} ${CXXFLAGS} -o ${SERVERNAME} ${SERVERNAME}.cc
 	@echo "Granting file execution permissions..."
 	chmod u+x ${CLIENTNAME}
 	chmod u+x ${SERVERNAME}

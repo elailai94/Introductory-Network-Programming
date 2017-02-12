@@ -91,7 +91,7 @@ int main() {
    // 
    const char* msg = "test string";
    const int len = strlen(msg);
-   int bytes_sent = send(clientSocket, msg, len, 0);
+   int bytes_sent = send(clientSocket, msg, len + 1, 0);
    if (bytes_sent < 0) {
       cerr << "ERROR: " << endl;
       exit(-1);
