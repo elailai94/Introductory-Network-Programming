@@ -36,7 +36,7 @@ int getServerPort(const int welcomeSocket) {
       cerr << "ERROR: " << endl;
       exit(-1);
    } // if
-   return serverAddress.sin_port;
+   return ntohs(serverAddress.sin_port);
 } // getServerPort
 
 int main() {
