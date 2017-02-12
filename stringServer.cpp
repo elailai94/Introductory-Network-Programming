@@ -13,6 +13,8 @@
 #include <netdb.h>
 #include <unistd.h>
 
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 
 using namespace std;
@@ -52,7 +54,7 @@ int main() {
    hints.ai_socktype = SOCK_STREAM;
    hints.ai_flags = AI_PASSIVE;
    struct addrinfo* res;
-   int result = getaddrinfo(NULL, NULL, &hints, &res);
+   int result = getaddrinfo(NULL, "0", &hints, &res);
    if (result != 0) {
       cerr << "ERROR: DNS lookup failed" << endl;
       exit(-1);
