@@ -1,1 +1,0 @@
-stringServer: stringServer.cpp

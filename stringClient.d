@@ -1,1 +1,0 @@
-stringClient: stringClient.cpp
