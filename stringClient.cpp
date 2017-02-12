@@ -7,14 +7,82 @@
 // @version: 1.0 09/02/2017
 //=============================================================================
 
-#include <iostream>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <unistd.h>
+
 #include <cstdlib>
+#include <iostream>
 
 using namespace std;
 
+//
+/*void checkEnvironmentVariables() {
+   const char* serverAddress = getenv("SERVER_ADDRESS");
+   if (serverAddress == NULL) {
+
+   } // if
+
+   const char* serverPort = getenv("SERVER_PORT");
+   if (serverPort == NULL) {
+
+   } // if
+//} // checkEnvironmentVariables
+*/
+
+// Handles reading input from the user
+//void *handleReadingInput(void *) {
+
+//} // handleReadingInput
+
+// Handles sending requests to the server
+//void *handleSendingRequests(void *) {
+
+//} // handleSendingRequests
+
 int main() {
-   const string serverAddress(getenv("SERVER_ADDRESS"));
-   const string serverPort(getenv("SERVER_PORT")); 
-	cout << serverAddress << endl;
-   cout << serverPort << endl;
+   //try {
+
+   //} catch (const string& errorMessage) {
+   //   cerr << errorMessage << endl;
+   //} // 
+   const char* serverAddress = getenv("SERVER_ADDRESS");
+   if (serverAddress == 0) {
+      cerr << "ERROR: " << endl;
+      exit(-1);
+   } // if
+
+   const char* serverPort = getenv("SERVER_PORT");
+   if (serverPort == 0) {
+      cerr << "ERROR: " << endl;
+      exit(-1);
+   } // if
+
+   // Creates the client TCP socket
+   const int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+   if (clientSocket < 0) {
+      cerr << "ERROR: " << endl;
+      exit(-1);
+   } // if
+
+   // Performs a DNS lookup on the server host name to obtain the server's IP address
+   struct addrinfo* res;
+   int result = getaddrinfo(serverAddress, serverPort, NULL, &res);
+   if (result != 0) {
+      cerr << "ERROR: DNS lookup failed" << endl;
+      exit(-1);
+   } // if
+
+   // Initiates the TCP connection between the client and the server
+   result = connect(clientSocket, res->ai_addr, res->ai_addrlen);
+   if (result < 0) {
+      cerr << "ERROR: connection failed" << endl;
+      exit(-1);
+   } // if
+
+   freeaddrinfo(res);
+
+   // Closes the TCP connection between the client and the server
+   close(clientSocket);
 } // main
