@@ -90,6 +90,7 @@ int main() {
 
    Message messageToServer = Message("Hello, World!");
    messageToServer.send(clientSocket);
+   cout << messageToServer.getText();
    /*
    const char* msg = "test string";
    const int len = strlen(msg);
