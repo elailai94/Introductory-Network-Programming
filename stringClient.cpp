@@ -67,8 +67,12 @@ int main() {
    } // if
 
    // Performs a DNS lookup on the server host name to obtain the server's IP address
+   struct addrinfo hints;
+   memset(&hints, 0, sizeof(hints));
+   hints.ai_family = AF_INET;  // use IPv4 or IPv6, whichever
+   hints.ai_socktype = SOCK_STREAM;
    struct addrinfo* res;
-   int result = getaddrinfo(serverAddress, serverPort, NULL, &res);
+   int result = getaddrinfo(serverAddress, serverPort, &hints, &res);
    if (result != 0) {
       cerr << "ERROR: DNS lookup failed" << endl;
       exit(-1);
