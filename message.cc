@@ -7,6 +7,7 @@
 // @version: 1.0 09/02/2017
 //=============================================================================
 
+#include <iostream>
 #include <sstream>
 #include <sys/socket.h>
 #include "message.h"
@@ -25,7 +26,7 @@ Message Message::parseData(string data) {
    istringstream iss(data);
    int textLength;
    string text;
-   iss >> textLength >> text;
+   iss >> textLength >> skipws >> text;
    return Message(text);
 } // parseData
 
