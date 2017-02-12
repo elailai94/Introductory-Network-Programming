@@ -67,6 +67,7 @@ int main() {
       exit(-1);
    } // if
 
+   freeaddrinfo(res);
    cout << "SERVER_ADDRESS " << getServerAddress() << endl;
    cout << "SERVER_PORT " << getServerPort(welcomeSocket) << endl;
 
