@@ -1,0 +1,5 @@
+stringClient
+stringServer
+*.d
+*.o
+

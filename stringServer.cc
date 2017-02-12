@@ -88,6 +88,10 @@ int main() {
          continue;
       } // if
 
+      Message messageFromClient = Message::receive(connectionSocket);
+      string clientString = messageFromClient.getText();
+      cout << clientString << endl;
+      /*
       char buf[1024];
       int bytes_received = recv(connectionSocket, buf, sizeof(buf), 0);
       if (bytes_received < 0) {
@@ -95,6 +99,7 @@ int main() {
          exit(-1);
       } // if
       cout << buf << endl;
+      */
 
       close(connectionSocket);
    } // while

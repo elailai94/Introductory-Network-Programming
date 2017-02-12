@@ -88,7 +88,9 @@ int main() {
 
    freeaddrinfo(res);
 
-   // 
+   Message messageToServer = Message("Hello, World!");
+   messageToServer.send(clientSocket);
+   /*
    const char* msg = "test string";
    const int len = strlen(msg);
    int bytes_sent = send(clientSocket, msg, len + 1, 0);
@@ -96,6 +98,7 @@ int main() {
       cerr << "ERROR: " << endl;
       exit(-1);
    } // if
+   */
 
    // Closes the TCP connection between the client and the server
    close(clientSocket);
