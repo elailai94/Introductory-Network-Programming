@@ -42,6 +42,7 @@ string Message::getText() {
 // See interface (header file)
 void Message::send(int dataTransferSocket) {
    string data = getData();
+   cout << data << endl;
    //int num_of_bytes_sent =
       ::send(dataTransferSocket, data.c_str(), (data.length() + 1), 0);
 } // send
@@ -51,6 +52,7 @@ Message Message::receive(int dataTransferSocket) {
    char data[1024]; 
    //int num_of_bytes_received =
       ::recv(dataTransferSocket, data, sizeof(data), 0);
+   cout << string(data) << endl;
    Message parsedMessage = parseData(string(data));
    return parsedMessage;
 } // receive
