@@ -7,15 +7,15 @@
 // @version: 1.0 09/02/2017
 //=============================================================================
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <unistd.h>
-
+#include <iostream>
 #include <cstdlib>
 #include <cstring>
-#include <iostream>
+#include <unistd.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include "message.h"
 
 using namespace std;
 
