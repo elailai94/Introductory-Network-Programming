@@ -70,7 +70,7 @@ int main() {
    // Performs a DNS lookup on the server host name to obtain the server's IP address
    struct addrinfo hints;
    memset(&hints, 0, sizeof(hints));
-   hints.ai_family = AF_INET;  // use IPv4 or IPv6, whichever
+   hints.ai_family = AF_INET;
    hints.ai_socktype = SOCK_STREAM;
    struct addrinfo* res;
    int result = getaddrinfo(serverAddress, serverPort, &hints, &res);
@@ -87,6 +87,15 @@ int main() {
    } // if
 
    freeaddrinfo(res);
+
+   // 
+   const char* msg = "test string";
+   const int len = strlen(msg);
+   int bytes_sent = send(clientSocket, msg, len, 0);
+   if (bytes_sent < 0) {
+      cerr << "ERROR: " << endl;
+      exit(-1);
+   } // if
 
    // Closes the TCP connection between the client and the server
    close(clientSocket);
