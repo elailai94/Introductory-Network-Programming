@@ -85,6 +85,7 @@ string Message::getText() {
 // See interface (header file)
 void Message::send(int dataTransferSocket) {
    char* data = getData();
+   cout << strlen(data) << endl;
    int totalNumOfBytesData = sizeof(data);
    int numOfBytesLeft = totalNumOfBytesData;
    int totalNumOfBytesSent = 0;
