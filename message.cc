@@ -106,11 +106,12 @@ Message Message::receive(int dataTransferSocket) {
    num_of_bytes_received =
       ::recv(dataTransferSocket, text, i, 0);
 
-   char* data = new char[sizeof(int) + i]();
-   strcpy(data, textLength);
-   strcpy(data + sizeof(int), text);
+   //char* data = new char[sizeof(int) + i]();
+   //strcpy(data, textLength);
+   //strcpy(data + sizeof(int), text);
 
-   Message parsedMessage = parseData(data);
-   delete[] data;
+   //Message parsedMessage = parseData(data);
+   //delete[] data;
+   Message parsedMessage = Message(string(text));
    return parsedMessage;
 } // receive
