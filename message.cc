@@ -30,7 +30,7 @@ void Message::writeText(char *buffer) {
 // See interface (header file)
 char* Message::getData() {
    int bufferLength = sizeof(int) + text.length() + 1;
-   char* buffer = new char[bufferLength];
+   char* buffer = new char[bufferLength]();
    writeTextLength(buffer);
    writeText(buffer);
    return buffer;
@@ -47,7 +47,7 @@ int Message::readTextLength(char *buffer) {
 
 // See interface (header file)
 char* Message::readText(char *buffer, int textLength) {
-   char* text = new char[textLength];
+   char* text = new char[textLength]();
    strcpy(text, buffer + sizeof(int));
    return text;
 } // getString
@@ -57,7 +57,7 @@ Message Message::parseData(char* data) {
    int textLength = readTextLength(data);
    char* text = readText(data, textLength);
    Message parsedMessage = Message(string(text));
-   delete text;
+   delete[] text;
    return parsedMessage;
 } // parseData
 
@@ -89,7 +89,7 @@ void Message::send(int dataTransferSocket) {
       numOfBytesLeft -= numOfBytesSent;
    } // while
 
-   delete data;
+   delete[] data;
 } // send
 
 // See interface (header file)
@@ -102,11 +102,11 @@ Message Message::receive(int dataTransferSocket) {
    num_of_bytes_received =
       ::recv(dataTransferSocket, text, i, 0);
 
-   char* data = new char[sizeof(int) + i];
+   char* data = new char[sizeof(int) + i]();
    strcpy(data, textLength);
    strcpy(data + sizeof(int), text);
 
    Message parsedMessage = parseData(data);
-   delete data;
+   delete[] data;
    return parsedMessage;
 } // receive
