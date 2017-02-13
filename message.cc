@@ -118,7 +118,9 @@ Message Message::receive(int dataTransferSocket) {
       ::recv(dataTransferSocket, text, i, 0);
    cout << num_of_bytes_received << endl;
 
-   //Message parsedMessage = parseData(string(data));
-   Message parsedMessage = Message("test");
+   string data = string(textLength) + string(text);
+
+   Message parsedMessage = parseData(string(data));
+   //Message parsedMessage = Message("test");
    return parsedMessage;
 } // receive
