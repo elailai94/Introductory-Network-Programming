@@ -74,7 +74,7 @@ string Message::getText() {
 void Message::send(int dataTransferSocket) {
    string data = getData();
    char c[data.length() + 1];
-   for (int i = 0; i < data.length(); ++i)
+   for (unsigned int i = 0; i < data.length(); ++i)
    {
       c[i] = data[i];
       cout << data[i] << endl;
