@@ -7,6 +7,7 @@
 // @version: 1.0 09/02/2017
 //=============================================================================
 
+#include <iostream>
 #include <cstring>
 #include <sys/socket.h>
 #include "message.h"
@@ -81,6 +82,7 @@ void Message::send(int dataTransferSocket) {
       int numOfBytesSent =
          ::send(dataTransferSocket, data + totalNumOfBytesSent,
             numOfBytesLeft, 0);
+      cout << numOfBytesSent << endl;
       if (numOfBytesSent < 0) {
          break;
       } // if
@@ -97,6 +99,7 @@ Message Message::receive(int dataTransferSocket) {
    char textLength[sizeof(int)]; 
    int num_of_bytes_received =
       ::recv(dataTransferSocket, textLength, sizeof(int), 0);
+   cout << num_of_bytes_received << endl;
    int i = readTextLength(textLength);
    char text[i];
    num_of_bytes_received =
