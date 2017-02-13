@@ -82,7 +82,6 @@ void Message::send(int dataTransferSocket) {
       int numOfBytesSent =
          ::send(dataTransferSocket, data + totalNumOfBytesSent,
             numOfBytesLeft, 0);
-      cout << numOfBytesSent << endl;
       if (numOfBytesSent < 0) {
          break;
       } // if
@@ -99,15 +98,15 @@ Message Message::receive(int dataTransferSocket) {
    char textLength[sizeof(int)]; 
    int num_of_bytes_received =
       ::recv(dataTransferSocket, textLength, sizeof(int), 0);
-   cout << num_of_bytes_received << endl;
-   int i = textLength[0] << 24 | textLength[1] << 16 | textLength[2] << 8 | textLength[3];
+   int i = readTextLength(textLength);
    cout << "i: " << i << endl;
    char text[i];
    num_of_bytes_received =
       ::recv(dataTransferSocket, text, i, 0);
-   cout << num_of_bytes_received << endl;
 
-   //Message parsedMessage = parseData(string(data));
+   //char* data = new char[sizeof(int) + i];
+
+   //Message parsedMessage = parseData(data);
    Message parsedMessage = Message(text);
    return parsedMessage;
 } // receive
