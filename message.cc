@@ -92,7 +92,7 @@ void Message::send(int dataTransferSocket) {
 
 // See interface (header file)
 Message Message::receive(int dataTransferSocket) {
-   char data[1024]; 
+   char data[1024] = {0}; 
    int num_of_bytes_received =
       ::recv(dataTransferSocket, data, sizeof(data), 0);
    cout << num_of_bytes_received << endl;
