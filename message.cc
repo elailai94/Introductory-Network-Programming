@@ -26,7 +26,8 @@ Message Message::parseData(string data) {
    istringstream iss(data);
    int textLength;
    string text;
-   iss >> textLength >> skipws >> text;
+   iss >> textLength;
+   getline(iss, text);
    return Message(text);
 } // parseData
 
@@ -42,9 +43,19 @@ string Message::getText() {
 // See interface (header file)
 void Message::send(int dataTransferSocket) {
    string data = getData();
-   cout << data << endl;
-   //int num_of_bytes_sent =
-      ::send(dataTransferSocket, data.c_str(), (data.length() + 1), 0);
+   int totalNumOfBytesData = data.length();
+
+   while (totalNumOfBytesSent < totalNumOfBytesData) {
+      int numOfBytesSent =
+         ::send(dataTransferSocket, data.c_str() + totalNumOfBytesSent,
+            numOfBytesLeft, 0);
+      if (numOfBytesSent < 0) {
+         break;
+      } // if
+
+      totalNumOfBytesSent += numOfBytesSent;
+      numOfBytesLeft -= numOfBytesSent;
+   } // while
 } // send
 
 // See interface (header file)
@@ -52,7 +63,6 @@ Message Message::receive(int dataTransferSocket) {
    char data[1024]; 
    //int num_of_bytes_received =
       ::recv(dataTransferSocket, data, sizeof(data), 0);
-   cout << string(data) << endl;
-   Message parsedMessage = parseData(string(data));
+   Message parsedMessage = parseData(string(data)); //?
    return parsedMessage;
 } // receive
