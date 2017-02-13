@@ -29,15 +29,15 @@ void Message::putString(char *buffer, char *value, int length) {
 */
 // See interface (header file)
 char* Message::getData() {
-   unsigned int dataLength = (sizeof(int) + text.length() + 1);
+   int dataLength = (sizeof(int) + text.length() + 1);
    char* buffer = new char[dataLength];
-   unsigned int textLength = (text.length() + 1);
+   int textLength = (text.length() + 1);
    buffer[0] = textLength >> 24;
    buffer[1] = textLength >> 16;
    buffer[2] = textLength >> 8;
    buffer[3] = textLength;
 
-   unsigned int i = buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3];
+   int i = buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3];
    cout << i << endl;
 
    strcpy(buffer + 4, text.c_str());
@@ -86,7 +86,7 @@ string Message::getText() {
 void Message::send(int dataTransferSocket) {
    char* data = getData();
    cout << strlen(data) << endl;
-   int totalNumOfBytesData = sizeof(data);
+   int totalNumOfBytesData = sizeof(int) + text.length() + 1;
    int numOfBytesLeft = totalNumOfBytesData;
    int totalNumOfBytesSent = 0;
 
