@@ -73,15 +73,18 @@ string Message::getText() {
 // See interface (header file)
 void Message::send(int dataTransferSocket) {
    string data = getData();
+   char * s = new char[data.length() + 1];
+   strcpy(s, data.c_str());
    int totalNumOfBytesData = data.length() + 1;
    int numOfBytesLeft = totalNumOfBytesData;
    int totalNumOfBytesSent = 0;
 
    while (totalNumOfBytesSent < totalNumOfBytesData) {
       int numOfBytesSent =
-         ::send(dataTransferSocket, data.c_str() + totalNumOfBytesSent,
+         ::send(dataTransferSocket, s + totalNumOfBytesSent,
             numOfBytesLeft, 0);
       cout << numOfBytesSent << endl;
+      cout strlen(s);
       if (numOfBytesSent < 0) {
          break;
       } // if
