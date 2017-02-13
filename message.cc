@@ -105,7 +105,7 @@ Message Message::receive(int dataTransferSocket) {
 
    char* data = new char[sizeof(int) + i];
    strcpy(data, textLength);
-   strcat(data, text);
+   strcpy(data + sizeof(int), text);
    cout << strlen(data) << endl;
 
    Message parsedMessage = parseData(data);
