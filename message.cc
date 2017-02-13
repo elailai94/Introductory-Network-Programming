@@ -86,7 +86,7 @@ void Message::send(int dataTransferSocket) {
 
    while (totalNumOfBytesSent < totalNumOfBytesData) {
       int numOfBytesSent =
-         ::send(dataTransferSocket, s + totalNumOfBytesSent,
+         ::send(dataTransferSocket, c + totalNumOfBytesSent,
             numOfBytesLeft, 0);
       cout << numOfBytesSent << endl;
       cout << strlen(c) << endl;
