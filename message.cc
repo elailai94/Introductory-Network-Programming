@@ -93,6 +93,7 @@ void Message::send(int dataTransferSocket) {
       int numOfBytesSent =
          ::send(dataTransferSocket, data + totalNumOfBytesSent,
             numOfBytesLeft, 0);
+      cout << numOfBytesSent << endl;
       if (numOfBytesSent < 0) {
          break;
       } // if
@@ -100,11 +101,13 @@ void Message::send(int dataTransferSocket) {
       totalNumOfBytesSent += numOfBytesSent;
       numOfBytesLeft -= numOfBytesSent;
    } // while
+
+   delete data;
 } // send
 
 // See interface (header file)
 Message Message::receive(int dataTransferSocket) {
-   char data[20]; 
+   char data[512]; 
    int num_of_bytes_received =
       ::recv(dataTransferSocket, data, sizeof(data), 0);
    cout << num_of_bytes_received << endl;
