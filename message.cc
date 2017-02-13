@@ -85,7 +85,6 @@ string Message::getText() {
 // See interface (header file)
 void Message::send(int dataTransferSocket) {
    char* data = getData();
-   cout << strlen(data) << endl;
    int totalNumOfBytesData = sizeof(int) + text.length() + 1;
    int numOfBytesLeft = totalNumOfBytesData;
    int totalNumOfBytesSent = 0;
@@ -108,10 +107,18 @@ void Message::send(int dataTransferSocket) {
 
 // See interface (header file)
 Message Message::receive(int dataTransferSocket) {
-   char data[512]; 
+   char textLength[sizeof(int)]; 
    int num_of_bytes_received =
-      ::recv(dataTransferSocket, data, sizeof(data), 0);
+      ::recv(dataTransferSocket, textLength, sizeof(int), 0);
    cout << num_of_bytes_received << endl;
-   Message parsedMessage = parseData(string(data));
+   int i = textLength[0] << 24 | textLength[1] << 16 | textLength[2] << 8 | textLength[3];
+   cout << "i: " << i << endl;
+   char text[i];
+   num_of_bytes_received =
+      ::recv(dataTransferSocket, text, i, 0);
+   cout << num_of_bytes_received << endl;
+
+   //Message parsedMessage = parseData(string(data));
+   Message parsedMessage = Message("test");
    return parsedMessage;
 } // receive
