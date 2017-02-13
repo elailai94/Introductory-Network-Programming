@@ -70,7 +70,7 @@ string Message::getText() {
 
 // See interface (header file)
 void Message::send(int dataTransferSocket) {
-   char *data = getData().c_str();
+   const char *data = getData().c_str();
    int totalNumOfBytesData = (strlen(data) + 1);
    int numOfBytesLeft = totalNumOfBytesData;
    int totalNumOfBytesSent = 0;
