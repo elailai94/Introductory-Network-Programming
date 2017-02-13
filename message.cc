@@ -7,6 +7,7 @@
 // @version: 1.0 09/02/2017
 //=============================================================================
 
+#include <iostream>
 #include <sys/socket.h>
 #include "message.h"
 
@@ -69,6 +70,7 @@ string Message::getText() {
 // See interface (header file)
 void Message::send(int dataTransferSocket) {
    string data = getData();
+   cout << data.length() << endl;
    int totalNumOfBytesData = (data.length() + 1);
    int numOfBytesLeft = totalNumOfBytesData;
    int totalNumOfBytesSent = 0;
@@ -91,6 +93,7 @@ Message Message::receive(int dataTransferSocket) {
    char data[1024]; 
    //int num_of_bytes_received =
       ::recv(dataTransferSocket, data, sizeof(data), 0);
+   cout << string(data).length() << endl;
    Message parsedMessage = parseData(string(data));
    return parsedMessage;
 } // receive
