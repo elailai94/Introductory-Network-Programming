@@ -72,7 +72,7 @@ string Message::getText() {
 void Message::send(int dataTransferSocket) {
    string data = getData();
    char* cstr = new char[data.length() + 1];
-   strcopy(cstr, data.c_str());
+   strcpy(cstr, data.c_str());
    int totalNumOfBytesData = data.length() + 1;
    int numOfBytesLeft = totalNumOfBytesData;
    int totalNumOfBytesSent = 0;
