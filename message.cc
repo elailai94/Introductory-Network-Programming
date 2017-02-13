@@ -77,7 +77,7 @@ void Message::send(int dataTransferSocket) {
    for (unsigned int i = 0; i < data.length(); ++i)
    {
       c[i] = data[i];
-      cout << data[i] << endl;
+      cout << c[i] << endl;
    }
    c[data.length()] = '\0';
    int totalNumOfBytesData = data.length() + 1;
