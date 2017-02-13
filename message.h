@@ -15,15 +15,15 @@
 
 class Message {
    std::string text;
-
+/*
    // Writes an integer into the buffer 
    void putInt(std::stringbuf &buffer, int value);
 
    // Writes a string into the buffer
    void putString(std::stringbuf & buffer, std::string value, int length);
-
+*/
    // Gets data to be sent
-   std::string getData();
+   char* getData();
 
    // Reads an integer from the buffer
    static int getInt(std::stringbuf &buffer);

@@ -13,26 +13,38 @@
 #include "message.h"
 
 using namespace std;
-
+/*
 // See interface (header file)
-void Message::putInt(stringbuf &buffer, int value) {
-   buffer.sputc(value >> 24);
-   buffer.sputc(value >> 16);
-   buffer.sputc(value >> 8);
-   buffer.sputc(value);
+void Message::putInt(char* buffer, int value) {
+   buffer[0] = value >> 24;
+   buffer[1] = value >> 16;
+   buffer[2] = value >> 8;
+   buffer[3] = value;
 } // putInt
 
 // See interface (header file)
-void Message::putString(stringbuf &buffer, string value, int length) {
+void Message::putString(char *buffer, char *value, int length) {
    buffer.sputn(value.c_str(), length);
 } // putString
-
+*/
 // See interface (header file)
-string Message::getData() {
-   stringbuf buffer;
-   putInt(buffer, text.length() + 1);
-   putString(buffer, text, text.length());
-   return buffer.str();
+char* Message::getData() {
+   int dataLength = (sizeof(int) + text.length() + 1);
+   char* buffer = new char[dataLength];
+   int textLength = (text.length() + 1);
+   buffer[0] = textLength >> 24;
+   buffer[1] = textLength >> 16;
+   buffer[2] = textLength >> 8;
+   buffer[3] = textLength;
+
+   int i = buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3];
+   cout << i << endl;
+
+   strcpy(buffer + 4, text.c_str());
+
+   //putInt(buffer, text.length() + 1);
+   //putString(buffer, text, text.length());
+   return buffer;
 } // getData
 
 // See interface (header file)
@@ -72,24 +84,15 @@ string Message::getText() {
 
 // See interface (header file)
 void Message::send(int dataTransferSocket) {
-   string data = getData();
-   char c[data.length() + 1];
-   for (unsigned int i = 0; i < data.length(); ++i)
-   {
-      c[i] = data[i];
-      cout << c[i] << endl;
-   }
-   c[data.length()] = '\0';
-   int totalNumOfBytesData = data.length() + 1;
+   char* data = getData();
+   int totalNumOfBytesData = sizeof(data);
    int numOfBytesLeft = totalNumOfBytesData;
    int totalNumOfBytesSent = 0;
 
    while (totalNumOfBytesSent < totalNumOfBytesData) {
       int numOfBytesSent =
-         ::send(dataTransferSocket, c + totalNumOfBytesSent,
+         ::send(dataTransferSocket, data + totalNumOfBytesSent,
             numOfBytesLeft, 0);
-      cout << numOfBytesSent << endl;
-      cout << strlen(c) << endl;
       if (numOfBytesSent < 0) {
          break;
       } // if

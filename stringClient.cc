@@ -10,13 +10,18 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
+#include <queue>
 #include <unistd.h>
+#include <pthread.h>
 #include <netdb.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include "message.h"
 
 using namespace std;
+
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+queue<Message> message;
 
 //
 /*void checkEnvironmentVariables() {
