@@ -13,64 +13,53 @@
 #include "message.h"
 
 using namespace std;
-/*
-// See interface (header file)
-void Message::putInt(char* buffer, int value) {
-   buffer[0] = value >> 24;
-   buffer[1] = value >> 16;
-   buffer[2] = value >> 8;
-   buffer[3] = value;
-} // putInt
 
 // See interface (header file)
-void Message::putString(char *buffer, char *value, int length) {
-   buffer.sputn(value.c_str(), length);
-} // putString
-*/
-// See interface (header file)
-char* Message::getData() {
-   int dataLength = (sizeof(int) + text.length() + 1);
-   char* buffer = new char[dataLength];
-   int textLength = (text.length() + 1);
+void Message::writeTextLength(char* buffer) {
+   int textLength = text.length() + 1;
    buffer[0] = textLength >> 24;
    buffer[1] = textLength >> 16;
    buffer[2] = textLength >> 8;
    buffer[3] = textLength;
+} // writeTextLength
 
-   int i = buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3];
-   cout << i << endl;
+// See interface (header file)
+void Message::writeText(char *buffer) {
+   strcpy(buffer + sizeof(int), text.c_str());
+} // writeText
 
-   strcpy(buffer + 4, text.c_str());
-
-   //putInt(buffer, text.length() + 1);
-   //putString(buffer, text, text.length());
+// See interface (header file)
+char* Message::getData() {
+   int bufferLength = sizeof(int) + text.length() + 1;
+   char* buffer = new char[bufferLength];
+   writeTextLength(buffer);
+   writeText(buffer);
    return buffer;
 } // getData
 
 // See interface (header file)
-int Message::getInt(stringbuf &buffer) {
-   int value = (buffer.sbumpc() << 24) | 
-               (buffer.sbumpc() << 16) |
-               (buffer.sbumpc() << 8)  |
-               buffer.sbumpc();
-   return value;
-} // getInt
+int Message::readTextLength(char *buffer) {
+   int textLength = buffer[0] << 24 | 
+                    buffer[1] << 16 |
+                    buffer[2] << 8  |
+                    buffer[3];
+   return textLength;
+} // readTextLength
 
 // See interface (header file)
-string Message::getString(stringbuf &buffer, int length) {
-   char value[length];
-   buffer.sgetn(value, length);
-   return string(value);
+char* Message::readText(char *buffer, int textLength) {
+   char* text = new char[textLength];
+   strcpy(text, buffer + sizeof(int));
+   return text;
 } // getString
 
 // See interface (header file)
-Message Message::parseData(string data) {
-   stringbuf buffer(data);
-   int textLength = getInt(buffer);
-   cout << textLength <<endl;
-   string text = getString(buffer, textLength - 1);
-   cout << text << endl;
-   return Message(text);
+Message Message::parseData(char* data) {
+   int textLength = readTextLength(data);
+   char* text = readText(data, textLength);
+   Message parsedMessage = Message(text);
+   delete text;
+   return parsedMessage;
 } // parseData
 
 // See interface (header file)
