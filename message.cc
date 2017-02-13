@@ -32,6 +32,7 @@ string Message::getData() {
    stringbuf buffer;
    putInt(buffer, text.length() + 1);
    putString(buffer, text, text.length());
+   cout << buffer.str() << endl;
    return buffer.str();
 } // getData
 
