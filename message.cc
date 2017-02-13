@@ -56,6 +56,7 @@ char* Message::readText(char *buffer, int textLength) {
 // See interface (header file)
 Message Message::parseData(char* data) {
    int textLength = readTextLength(data);
+   cout << textLength << endl;
    char* text = readText(data, textLength);
    Message parsedMessage = Message(string(text));
    delete[] text;
@@ -101,7 +102,6 @@ Message Message::receive(int dataTransferSocket) {
       ::recv(dataTransferSocket, textLength, sizeof(int), 0);
    cout << num_of_bytes_received << endl;
    int i = readTextLength(textLength);
-   cout << i << endl;
    char text[i];
    num_of_bytes_received =
       ::recv(dataTransferSocket, text, i, 0);
