@@ -32,7 +32,6 @@ string Message::getData() {
    stringbuf buffer;
    putInt(buffer, text.length() + 1);
    putString(buffer, text, text.length());
-   cout << buffer.str() << endl;
    return buffer.str();
 } // getData
 
@@ -74,7 +73,7 @@ string Message::getText() {
 // See interface (header file)
 void Message::send(int dataTransferSocket) {
    string data = getData();
-   char * s = new char[data.length() + 1];
+   char* s = new char[data.length() + 1];
    strcpy(s, data.c_str());
    int totalNumOfBytesData = data.length() + 1;
    int numOfBytesLeft = totalNumOfBytesData;
@@ -85,7 +84,7 @@ void Message::send(int dataTransferSocket) {
          ::send(dataTransferSocket, s + totalNumOfBytesSent,
             numOfBytesLeft, 0);
       cout << numOfBytesSent << endl;
-      cout << data.length() << endl;
+      cout << strlen(s) << endl;
       if (numOfBytesSent < 0) {
          break;
       } // if
