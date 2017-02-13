@@ -91,13 +91,14 @@ int main() {
       exit(-1);
    } // if
 
-   freeaddrinfo(res);
+   
 
    string s = "document specification FOR CS454 a2 milestone";
    Message messageToServer = Message(s);
    messageToServer.send(clientSocket);
    cout << messageToServer.getText() << endl;
 
+   freeaddrinfo(res);
    // Closes the TCP connection between the client and the server
    close(clientSocket);
 } // main

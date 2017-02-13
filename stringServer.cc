@@ -67,7 +67,7 @@ int main() {
       exit(-1);
    } // if
 
-   freeaddrinfo(res);
+   
    cout << "SERVER_ADDRESS " << getServerAddress() << endl;
    cout << "SERVER_PORT " << getServerPort(welcomeSocket) << endl;
 
@@ -95,6 +95,7 @@ int main() {
       close(connectionSocket);
    } // while
 
+   freeaddrinfo(res);
    // Closes the TCP connection between the client and the server
    close(welcomeSocket);
 } // main

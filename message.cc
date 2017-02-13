@@ -101,6 +101,7 @@ Message Message::receive(int dataTransferSocket) {
       ::recv(dataTransferSocket, textLength, sizeof(int), 0);
    cout << num_of_bytes_received << endl;
    int i = readTextLength(textLength);
+   cout << i << endl;
    char text[i];
    num_of_bytes_received =
       ::recv(dataTransferSocket, text, i, 0);
