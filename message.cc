@@ -7,6 +7,7 @@
 // @version: 1.0 09/02/2017
 //=============================================================================
 
+#include <iostream>
 #include <cstring>
 #include <sys/socket.h>
 #include "message.h"
@@ -105,6 +106,7 @@ Message Message::receive(int dataTransferSocket) {
    char* data = new char[sizeof(int) + i];
    strcpy(data, textLength);
    strcat(data, text);
+   cout << strlen(data) << endl;
 
    Message parsedMessage = parseData(data);
    //Message parsedMessage = Message(text);
