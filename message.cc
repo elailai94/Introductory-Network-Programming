@@ -57,7 +57,7 @@ Message Message::parseData(char* data) {
    int textLength = readTextLength(data);
    char* text = readText(data, textLength);
    Message parsedMessage = Message(text);
-   delete text;
+   delete[] text;
    return parsedMessage;
 } // parseData
 
