@@ -29,15 +29,15 @@ void Message::putString(char *buffer, char *value, int length) {
 */
 // See interface (header file)
 char* Message::getData() {
-   int dataLength = (sizeof(int) + text.length() + 1);
+   unsigned int dataLength = (sizeof(int) + text.length() + 1);
    char* buffer = new char[dataLength];
-   int textLength = (text.length() + 1);
+   unsigned int textLength = (text.length() + 1);
    buffer[0] = textLength >> 24;
    buffer[1] = textLength >> 16;
    buffer[2] = textLength >> 8;
    buffer[3] = textLength;
 
-   int i = buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3];
+   unsigned int i = buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3];
    cout << i << endl;
 
    strcpy(buffer + 4, text.c_str());
