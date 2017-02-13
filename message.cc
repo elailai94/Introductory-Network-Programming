@@ -28,7 +28,7 @@ void Message::putString(stringbuf &buffer, string value, int length) {
 } // putString
 
 // See interface (header file)
-char* Message::getData() {
+string Message::getData() {
    stringbuf buffer;
    putInt(buffer, text.length() + 1);
    putString(buffer, text, text.length());
