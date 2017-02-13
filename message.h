@@ -11,12 +11,25 @@
 #define __MESSAGE_H__
 
 #include <string>
+#include <sstream>
 
 class Message {
    std::string text;
 
+   // Writes an integer into the buffer 
+   void putInt(std::stringbuf &buffer, int value);
+
+   // Writes a string into the buffer
+   void putString(std::stringbuf & buffer, std::string value, int length);
+
    // Gets data to be sent
    std::string getData();
+
+   // Reads an integer from the buffer
+   static int getInt(std::stringbuf &buffer);
+
+   // Reads a string from the buffer
+   static std::string getString(std::stringbuf &buffer, int length);
 
    // Parses data received
    static Message parseData(std::string data);

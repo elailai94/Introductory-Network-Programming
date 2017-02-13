@@ -7,27 +7,53 @@
 // @version: 1.0 09/02/2017
 //=============================================================================
 
-#include <iostream>
-#include <sstream>
 #include <sys/socket.h>
 #include "message.h"
 
 using namespace std;
 
 // See interface (header file)
+void Message::putInt(stringbuf &buffer, int value) {
+   buffer.sputc(value >> 24);
+   buffer.sputc(value >> 16);
+   buffer.sputc(value >> 8);
+   buffer.sputc(value);
+} // putInt
+
+// See interface (header file)
+void Message::putString(stringbuf &buffer, string value, int length) {
+   buffer.sputn(value.c_str(), length);
+} // putString
+
+// See interface (header file)
 string Message::getData() {
-   ostringstream oss;
-   oss << (text.length() + 1) << text;
-   return oss.str();
+   stringbuf buffer;
+   putInt(buffer, text.length() + 1);
+   putString(buffer, text, text.length());
+   return buffer.str();
 } // getData
 
 // See interface (header file)
+int Message::getInt(stringbuf &buffer) {
+   int value = (buffer.sbumpc() << 24) | 
+               (buffer.sbumpc() << 16) |
+               (buffer.sbumpc() << 8)  |
+               buffer.sbumpc();
+   return value;
+} // getInt
+
+// See interface (header file)
+string Message::getString(stringbuf &buffer, int length) {
+   char value[length];
+   buffer.sgetn(value, length);
+   return string(value);
+} // getString
+
+// See interface (header file)
 Message Message::parseData(string data) {
-   istringstream iss(data);
-   int textLength;
-   string text;
-   iss >> textLength;
-   getline(iss, text);
+   stringbuf buffer(data);
+   int textLength = getInt(buffer);
+   string text = getString(buffer, textLength - 1);
    return Message(text);
 } // parseData
 
@@ -65,6 +91,6 @@ Message Message::receive(int dataTransferSocket) {
    char data[1024]; 
    //int num_of_bytes_received =
       ::recv(dataTransferSocket, data, sizeof(data), 0);
-   Message parsedMessage = parseData(string(data)); //?
+   Message parsedMessage = parseData(string(data));
    return parsedMessage;
 } // receive
