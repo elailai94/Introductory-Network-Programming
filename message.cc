@@ -28,7 +28,7 @@ void Message::putString(stringbuf &buffer, string value, int length) {
 } // putString
 
 // See interface (header file)
-string Message::getData() {
+char* Message::getData() {
    stringbuf buffer;
    putInt(buffer, text.length() + 1);
    putString(buffer, text, text.length());
@@ -55,7 +55,9 @@ string Message::getString(stringbuf &buffer, int length) {
 Message Message::parseData(string data) {
    stringbuf buffer(data);
    int textLength = getInt(buffer);
+   cout << textLength <<endl;
    string text = getString(buffer, textLength - 1);
+   cout << text << endl;
    return Message(text);
 } // parseData
 
@@ -71,17 +73,14 @@ string Message::getText() {
 // See interface (header file)
 void Message::send(int dataTransferSocket) {
    string data = getData();
-   char* cstr = new char[data.length() + 1];
-   strcpy(cstr, data.c_str());
    int totalNumOfBytesData = data.length() + 1;
    int numOfBytesLeft = totalNumOfBytesData;
    int totalNumOfBytesSent = 0;
 
    while (totalNumOfBytesSent < totalNumOfBytesData) {
       int numOfBytesSent =
-         ::send(dataTransferSocket, cstr + totalNumOfBytesSent,
+         ::send(dataTransferSocket, data.c_str() + totalNumOfBytesSent,
             numOfBytesLeft, 0);
-      cout << cstr << endl;
       cout << numOfBytesSent << endl;
       if (numOfBytesSent < 0) {
          break;
@@ -94,11 +93,10 @@ void Message::send(int dataTransferSocket) {
 
 // See interface (header file)
 Message Message::receive(int dataTransferSocket) {
-   char data[18]; 
+   char data[20]; 
    int num_of_bytes_received =
       ::recv(dataTransferSocket, data, sizeof(data), 0);
    cout << num_of_bytes_received << endl;
-   cout << strlen(data) << endl;
    Message parsedMessage = parseData(string(data));
    return parsedMessage;
 } // receive
