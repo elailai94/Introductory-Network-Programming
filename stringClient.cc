@@ -93,7 +93,8 @@ int main() {
 
    freeaddrinfo(res);
 
-   Message messageToServer = Message("Hello, World!");
+   string s = "document specification FOR CS454 a2 milestone";
+   Message messageToServer = Message(s);
    messageToServer.send(clientSocket);
    cout << messageToServer.getText() << endl;
 
