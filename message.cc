@@ -7,7 +7,6 @@
 // @version: 1.0 09/02/2017
 //=============================================================================
 
-#include <iostream>
 #include <cstring>
 #include <sys/socket.h>
 #include "message.h"
@@ -58,7 +57,7 @@ Message Message::parseData(char* data) {
    int textLength = readTextLength(data);
    char* text = readText(data, textLength);
    Message parsedMessage = Message(string(text));
-   delete[] text;
+   delete text;
    return parsedMessage;
 } // parseData
 
@@ -90,7 +89,7 @@ void Message::send(int dataTransferSocket) {
       numOfBytesLeft -= numOfBytesSent;
    } // while
 
-   delete[] data;
+   delete data;
 } // send
 
 // See interface (header file)
@@ -106,10 +105,8 @@ Message Message::receive(int dataTransferSocket) {
    char* data = new char[sizeof(int) + i];
    strcpy(data, textLength);
    strcpy(data + sizeof(int), text);
-   cout << strlen(data) << endl;
 
    Message parsedMessage = parseData(data);
-   //Message parsedMessage = Message(text);
-   delete[] data;
+   delete data;
    return parsedMessage;
 } // receive
