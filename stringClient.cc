@@ -22,9 +22,9 @@ using namespace std;
 
 pthread_mutex_t messagesNotSentMutex = PTHREAD_MUTEX_INITIALIZER;
 queue<Message> messagesNotSent;
-pthread_mutex_t messagesNotReceivedMutex = PTHREAD_MUTEX_INITIALIZER;
-int volatile messagesNotReceived = 0;
-bool volatile isEOF = false;
+//pthread_mutex_t messagesNotReceivedMutex = PTHREAD_MUTEX_INITIALIZER;
+//int messagesNotReceived = 0;
+bool isEOF = false;
 
 // Checks the number and formats of the environment variables passed
 void checkEnvironmentVariables() {
@@ -71,9 +71,16 @@ void *handleSendingRequests(void *arg) {
          messagesNotSent.pop();
          pthread_mutex_unlock(&messagesNotSentMutex);
          messageToServer.send(clientSocket);
-         pthread_mutex_lock(&messagesNotReceivedMutex);
-         messagesNotReceived += 1;
-         pthread_mutex_unlock(&messagesNotReceivedMutex);
+         //pthread_mutex_lock(&messagesNotReceivedMutex);
+         //messagesNotReceived += 1;
+         //pthread_mutex_unlock(&messagesNotReceivedMutex);
+
+         Message messageFromServer = Message::receive(clientSocket);
+         string titleCaseText = messageFromServer.getText();
+         cout << "Server: " << titleCaseText << endl;
+         //pthread_mutex_lock(&messagesNotReceivedMutex);
+         //messagesNotReceived -= 1;
+         //pthread_mutex_unlock(&messagesNotReceivedMutex);
          
          // Delays for two seconds between successive requests
          sleep(2);
@@ -168,7 +175,7 @@ int main() {
    if (result != 0) {
       exit(-1);
    } // if
-
+/*
    pthread_t receivingRepliesThread;
    // Creates a new thread to handle receiving replies from the server
    result = pthread_create(&receivingRepliesThread, 0, handleReceivingReplies,
@@ -176,7 +183,7 @@ int main() {
    if (result != 0) {
       exit(-1);
    } // if
-
+*/
    // Waits for the reading input thread to terminate
    result = pthread_join(readingInputThread, 0);
    if (result != 0) {
@@ -188,13 +195,13 @@ int main() {
    if (result != 0) {
       exit(-1);
    } // if
-
+/*
    // Waits for the receiving replies thread to terminate
    result = pthread_join(receivingRepliesThread, 0);
    if (result != 0) {
       exit(-1);
    } // if
-
+*/
    // Closes the TCP connection between the client and the server
    close(clientSocket);
 
