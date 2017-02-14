@@ -24,7 +24,7 @@ pthread_mutex_t messagesNotSentLock = PTHREAD_MUTEX_INITIALIZER;
 queue<Message> messagesNotSent;
 bool isEOF = false;
 
-// Checks the number and formats of the environement variables passed
+// Checks the number and formats of the environment variables passed
 void checkEnvironmentVariables() {
    char* serverAddress = getenv("SERVER_ADDRESS");
    if (serverAddress == 0) {
@@ -39,10 +39,12 @@ void checkEnvironmentVariables() {
 
 // Handles reading input from the user
 void *handleReadingInput(void *arg) {
-    string line;
+    string text = "";
 
-    while (getline(cin, line)) {
-       Message messageToServer = Message(line);
+    while (getline(cin, text)) {
+       // Creates a message to send data to the server and inserts it
+       // into the messages not sent queue
+       Message messageToServer = Message(text);
        pthread_mutex_lock(&messagesNotSentLock);
        messagesNotSent.push(messageToServer);
        pthread_mutex_unlock(&messagesNotSentLock);
@@ -59,13 +61,19 @@ void *handleSendingRequests(void *arg) {
 
    while (!isEOF) {
       if (!messagesNotSent.empty()) {
+         // Removes a message from the messages not sent queue and
+         // writes it out to the client socket
          Message messageToServer = messagesNotSent.front();
-
          pthread_mutex_lock(&messagesNotSentLock);
          messagesNotSent.pop();
          pthread_mutex_unlock(&messagesNotSentLock);
-
          messageToServer.send(clientSocket);
+
+         // Creates 
+         //Message messageFromServer = Message::receive(clientSocket);
+         //string 
+         
+         // Delays for two seconds between successive requests
          sleep(2);
       } // if
    } // while
@@ -77,7 +85,7 @@ int main() {
    // Checks the number and formats of the environment variables passed
    checkEnvironmentVariables();
 
-   // Creates the client TCP socket
+   // Creates the client socket
    long clientSocket = socket(AF_INET, SOCK_STREAM, 0);
    if (clientSocket < 0) {
       exit(-1);
