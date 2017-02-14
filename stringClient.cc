@@ -88,7 +88,7 @@ void *handleSendingRequests(void *arg) {
 void *handleReceivingReplies(void *arg) {
    long clientSocket = (long) arg;
 
-   while (!isEOF || messagesNotReceived > 0) {
+   while (!isEOF) {
       // Creates a message to receive data from the server and reads
       // into it from the client socket
       Message messageFromServer = Message::receive(clientSocket);
@@ -101,6 +101,14 @@ void *handleReceivingReplies(void *arg) {
 
    // A client should wait to receive the server's reply to the last request sent
    // by the client to the server
+   pthread_mutex_lock(&messagesNotReceivedMutex);
+   for (int i = messagesNotReceived; i > 0; --i) {
+      // 
+      Message messageFromServer = Message::receive(clientSocket);
+      string titleCaseText = messageFromServer.getText();
+      cout << "Server: " << titleCaseText << endl;
+   } // for
+   pthread_mutex_unlock(&messagesNotReceivedMutex);
 
    // Terminates the current thread
    pthread_exit(0);
