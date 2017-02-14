@@ -69,9 +69,12 @@ void *handleSendingRequests(void *arg) {
          pthread_mutex_unlock(&messagesNotSentLock);
          messageToServer.send(clientSocket);
 
-         // Creates 
-         //Message messageFromServer = Message::receive(clientSocket);
-         //string 
+         /* -----  Should we have a separate thread to receive replies? -------*/
+         // Creates a message to receive data from the server and reads
+         // into it from the client socket
+         Message messageFromServer = Message::receive(clientSocket);
+         string titleCaseText = messageFromServer.getText();
+         cout << "Server: " << titleCaseText << endl;
          
          // Delays for two seconds between successive requests
          sleep(2);
