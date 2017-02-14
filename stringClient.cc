@@ -101,9 +101,9 @@ void *handleReceivingReplies(void *arg) {
       Message messageFromServer = Message::receive(clientSocket);
       string titleCaseText = messageFromServer.getText();
       cout << "Server: " << titleCaseText << endl;
-      pthread_mutex_lock(&messagesNotReceivedMutex);
-      messagesNotReceived -= 1;
-      pthread_mutex_unlock(&messagesNotReceivedMutex);
+      //pthread_mutex_lock(&messagesNotReceivedMutex);
+      //messagesNotReceived -= 1;
+      //pthread_mutex_unlock(&messagesNotReceivedMutex);
    } // while
 
    // A client should wait to receive the server's reply to the last request sent
