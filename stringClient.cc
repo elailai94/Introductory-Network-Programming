@@ -101,7 +101,7 @@ void *handleReceivingReplies(void *arg) {
 
    // A client should wait to receive the server's reply to the last request sent
    // by the client to the server
-   pthread_mutex_lock(&messagesNotReceivedMutex);
+   /*pthread_mutex_lock(&messagesNotReceivedMutex);
    for (int i = messagesNotReceived; i > 0; --i) {
       // 
       Message messageFromServer = Message::receive(clientSocket);
@@ -109,6 +109,7 @@ void *handleReceivingReplies(void *arg) {
       cout << "Server: " << titleCaseText << endl;
    } // for
    pthread_mutex_unlock(&messagesNotReceivedMutex);
+   */
 
    // Terminates the current thread
    pthread_exit(0);
