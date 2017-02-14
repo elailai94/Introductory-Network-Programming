@@ -70,9 +70,6 @@ void *handleSendingRequests(void *arg) {
       } // if
    } // while
 
-   // Closes the TCP connection between the client and the server
-   close(clientSocket);
-
    pthread_exit(0);
 } // handleSendingRequests
 
@@ -96,7 +93,8 @@ int main() {
    
    struct addrinfo* serverAddressResults;
    
-   // Performs a DNS lookup on the server host name to obtain the server's IP address
+   // Performs a DNS lookup on the server's host name to obtain the
+   // server's IP address
    int result = getaddrinfo(serverAddress, serverPort,
       &serverAddressHints, &serverAddressResults);
    if (result != 0) {
@@ -107,7 +105,6 @@ int main() {
    result = connect(clientSocket, serverAddressResults->ai_addr,
       serverAddressResults->ai_addrlen);
    if (result < 0) {
-      freeaddrinfo(serverAddressResults);
       exit(-1);
    } // if
 
@@ -129,12 +126,10 @@ int main() {
    if (result < 0) {
       exit(-1);
    } // if
-/*
-   string s = "document specification FOR CS454 a2 milestone hello WORLD";
-   Message messageToServer = Message(s);
-   messageToServer.send(clientSocket);
-   cout << messageToServer.getText() << endl;
-*/
 
+   // Closes the TCP connection between the client and the server
+   close(clientSocket);
+
+   pthread_mutex_destroy(&messagesNotSentLock);
    pthread_exit(0);
 } // main

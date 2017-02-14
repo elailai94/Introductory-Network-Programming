@@ -91,9 +91,9 @@ int main() {
       Message messageFromClient = Message::receive(connectionSocket);
       string clientString = messageFromClient.getText();
       cout << clientString << endl;
+
+      close(connectionSocket);
    } // while
-   
-   close(connectionSocket);
 
    freeaddrinfo(res);
    // Closes the TCP connection between the client and the server
