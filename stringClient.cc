@@ -22,6 +22,8 @@ using namespace std;
 
 pthread_mutex_t messagesNotSentMutex = PTHREAD_MUTEX_INITIALIZER;
 queue<Message> messagesNotSent;
+pthread_mutex_t messagesNotReceivedMutex = PTHREAD_MUTEX_INITIALIZER;
+int messagesNotReceived = 0;
 bool isEOF = false;
 
 // Checks the number and formats of the environment variables passed
@@ -52,6 +54,7 @@ void *handleReadingInput(void *arg) {
 
     isEOF = true;
 
+    // Terminates the current thread
     pthread_exit(0);
 } // handleReadingInput
 
@@ -68,12 +71,16 @@ void *handleSendingRequests(void *arg) {
          messagesNotSent.pop();
          pthread_mutex_unlock(&messagesNotSentMutex);
          messageToServer.send(clientSocket);
+         pthread_mutex_lock(&messagesNotReceivedMutex);
+         messagesNotReceived += 1;
+         pthread_mutex_unlock(&messagesNotReceivedMutex);
          
          // Delays for two seconds between successive requests
          sleep(2);
       } // if
    } // while
 
+   // Terminates the current thread
    pthread_exit(0);
 } // handleSendingRequests
 
@@ -81,14 +88,21 @@ void *handleSendingRequests(void *arg) {
 void *handleReceivingReplies(void *arg) {
    long clientSocket = (long) arg;
 
-   while (!isEOF) {
+   while (!isEOF || messagesNotReceived > 0) {
       // Creates a message to receive data from the server and reads
       // into it from the client socket
       Message messageFromServer = Message::receive(clientSocket);
       string titleCaseText = messageFromServer.getText();
       cout << "Server: " << titleCaseText << endl;
+      pthread_mutex_lock(&messagesNotReceivedMutex);
+      messagesNotReceived -= 1;
+      pthread_mutex_unlock(&messagesNotReceivedMutex);
    } // while
 
+   // A client should wait to receive the server's reply to the last request sent
+   // by the client to the server
+
+   // Terminates the current thread
    pthread_exit(0);
 } // handleReceivingReplies
 
@@ -175,5 +189,6 @@ int main() {
    // Closes the TCP connection between the client and the server
    close(clientSocket);
 
+   // Terminates the current thread
    pthread_exit(0);
 } // main
