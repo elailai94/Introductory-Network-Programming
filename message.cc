@@ -83,7 +83,6 @@ void Message::send(int dataTransferSocket) {
       int numOfBytesSent =
          ::send(dataTransferSocket, data + totalNumOfBytesSent,
             numOfBytesLeft, 0);
-      cout << numOfBytesSent << endl;
       if (numOfBytesSent < 0) {
          break;
       } // if

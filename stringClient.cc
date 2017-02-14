@@ -20,85 +20,121 @@
 
 using namespace std;
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-queue<Message> message;
+pthread_mutex_t messagesNotSentLock = PTHREAD_MUTEX_INITIALIZER;
+queue<Message> messagesNotSent;
+bool isEOF = false;
 
-//
-/*void checkEnvironmentVariables() {
-   const char* serverAddress = getenv("SERVER_ADDRESS");
-   if (serverAddress == NULL) {
-
+// Checks the number and formats of the environement variables passed
+void checkEnvironmentVariables() {
+   char* serverAddress = getenv("SERVER_ADDRESS");
+   if (serverAddress == 0) {
+      exit(-1);
    } // if
 
-   const char* serverPort = getenv("SERVER_PORT");
-   if (serverPort == NULL) {
-
+   char* serverPort = getenv("SERVER_PORT");
+   if (serverPort == 0) {
+      exit(-1);
    } // if
-//} // checkEnvironmentVariables
-*/
+} // checkEnvironmentVariables
 
 // Handles reading input from the user
-//void *handleReadingInput(void *) {
+void *handleReadingInput(void *arg) {
+    string line;
 
-//} // handleReadingInput
+    while (getline(cin, line)) {
+       Message messageToServer = Message(line);
+       pthread_mutex_lock(&messagesNotSentLock);
+       messagesNotSent.push(messageToServer);
+       pthread_mutex_unlock(&messagesNotSentLock);
+    } // while
+
+    isEOF = true;
+
+    pthread_exit(0);
+} // handleReadingInput
 
 // Handles sending requests to the server
-//void *handleSendingRequests(void *) {
+void *handleSendingRequests(void *arg) {
+   long clientSocket = (long) arg;
 
-//} // handleSendingRequests
+   while (!isEOF) {
+      if (!messagesNotSent.empty()) {
+         Message messageToServer = messagesNotSent.front();
+
+         pthread_mutex_lock(&messagesNotSentLock);
+         messagesNotSent.pop();
+         pthread_mutex_unlock(&messagesNotSentLock);
+
+         messageToServer.send(clientSocket);
+         sleep(2);
+      } // if
+   } // while
+
+   // Closes the TCP connection between the client and the server
+   close(clientSocket);
+
+   pthread_exit(0);
+} // handleSendingRequests
 
 int main() {
-   //try {
-
-   //} catch (const string& errorMessage) {
-   //   cerr << errorMessage << endl;
-   //} // 
-   const char* serverAddress = getenv("SERVER_ADDRESS");
-   if (serverAddress == 0) {
-      cerr << "ERROR: " << endl;
-      exit(-1);
-   } // if
-
-   const char* serverPort = getenv("SERVER_PORT");
-   if (serverPort == 0) {
-      cerr << "ERROR: " << endl;
-      exit(-1);
-   } // if
+   // Checks the number and formats of the environment variables passed
+   checkEnvironmentVariables();
 
    // Creates the client TCP socket
-   const int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+   long clientSocket = socket(AF_INET, SOCK_STREAM, 0);
    if (clientSocket < 0) {
-      cerr << "ERROR: " << endl;
       exit(-1);
    } // if
 
+   char* serverAddress = getenv("SERVER_ADDRESS");
+   char* serverPort = getenv("SERVER_PORT");
+   
+   struct addrinfo serverAddressHints;
+   memset(&serverAddressHints, 0, sizeof(serverAddressHints));
+   serverAddressHints.ai_family = AF_INET;
+   serverAddressHints.ai_socktype = SOCK_STREAM;
+   
+   struct addrinfo* serverAddressResults;
+   
    // Performs a DNS lookup on the server host name to obtain the server's IP address
-   struct addrinfo hints;
-   memset(&hints, 0, sizeof(hints));
-   hints.ai_family = AF_INET;
-   hints.ai_socktype = SOCK_STREAM;
-   struct addrinfo* res;
-   int result = getaddrinfo(serverAddress, serverPort, &hints, &res);
+   int result = getaddrinfo(serverAddress, serverPort,
+      &serverAddressHints, &serverAddressResults);
    if (result != 0) {
-      cerr << "ERROR: DNS lookup failed" << endl;
       exit(-1);
    } // if
 
    // Initiates the TCP connection between the client and the server
-   result = connect(clientSocket, res->ai_addr, res->ai_addrlen);
+   result = connect(clientSocket, serverAddressResults->ai_addr,
+      serverAddressResults->ai_addrlen);
    if (result < 0) {
-      cerr << "ERROR: connection failed" << endl;
+      freeaddrinfo(serverAddressResults);
       exit(-1);
    } // if
 
-   
+   freeaddrinfo(serverAddressResults);
 
-   string s = "document specification FOR CS454 a2 milestone";
+   pthread_t readingInputThread;
+
+   // Creates a new thread to handle reading input from the user
+   result = pthread_create(&readingInputThread, 0, handleReadingInput, 0);
+   if (result < 0) {
+      exit(-1);
+   } // if
+
+   pthread_t sendingRequestsThread;
+
+   // Creates a new thread to handle sending requests to the server
+   result = pthread_create(&sendingRequestsThread, 0, handleSendingRequests,
+      (void *) clientSocket);
+   if (result < 0) {
+      exit(-1);
+   } // if
+/*
+   string s = "document specification FOR CS454 a2 milestone hello WORLD";
    Message messageToServer = Message(s);
    messageToServer.send(clientSocket);
    cout << messageToServer.getText() << endl;
+*/
 
-   freeaddrinfo(res);
-   // Closes the TCP connection between the client and the server
-   close(clientSocket);
+   pthread_exit(0);
 } // main
