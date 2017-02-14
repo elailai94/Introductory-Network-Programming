@@ -14,7 +14,7 @@ SERVERNAME = stringServer
 
 all:
 	@echo "Compiling..."
-	${CXX} ${CXXFLAGS} -o ${CLIENTNAME} ${CLIENTNAME}.cc message.cc
+	${CXX} ${CXXFLAGS} -o ${CLIENTNAME} ${CLIENTNAME}.cc message.cc -lpthread
 	${CXX} ${CXXFLAGS} -o ${SERVERNAME} ${SERVERNAME}.cc message.cc
 	@echo "Granting file execution permissions..."
 	chmod u+x ${CLIENTNAME}
