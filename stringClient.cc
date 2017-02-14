@@ -23,8 +23,8 @@ using namespace std;
 pthread_mutex_t messagesNotSentMutex = PTHREAD_MUTEX_INITIALIZER;
 queue<Message> messagesNotSent;
 pthread_mutex_t messagesNotReceivedMutex = PTHREAD_MUTEX_INITIALIZER;
-int messagesNotReceived = 0;
-bool isEOF = false;
+int volatile messagesNotReceived = 0;
+bool volatile isEOF = false;
 
 // Checks the number and formats of the environment variables passed
 void checkEnvironmentVariables() {
