@@ -138,6 +138,9 @@ int main() {
       exit(-1);
    } // if
 
+   pthread_join(readingInputThread, 0);
+   pthread_join(sendingRequestsThread, 0);
+
    // Closes the TCP connection between the client and the server
    close(clientSocket);
 

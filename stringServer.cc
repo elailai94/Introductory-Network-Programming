@@ -92,6 +92,9 @@ int main() {
       string clientString = messageFromClient.getText();
       cout << clientString << endl;
 
+      //Message messageToClient = Message("Hello, World!");
+
+
       close(connectionSocket);
    } // while
 
