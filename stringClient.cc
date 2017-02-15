@@ -1,9 +1,8 @@
 //=============================================================================
-// CS 454 Assignment 2
+// Introductory Network Programming
 //
 // @description: An implementation of a client program in C++
-// @author: Ah Hoe Lai
-// @userid: ahlai
+// @author: Elisha Lai
 // @version: 1.0 09/02/2017
 //=============================================================================
 
