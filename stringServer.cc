@@ -106,13 +106,16 @@ int main() {
          continue;
       } // if
 
-      // Creates a packet to receive data from the client and reads into
+      // Creates a message to receive data from the client and reads into
       // it from the connection socket
       Message messageFromClient = Message::receive(connectionSocket);
       string clientText = messageFromClient.getText();
       cout << clientText << endl;
 
-      //Message messageToClient = Message("Hello, World!");
+      // Writes it out to the connection socket
+      messageFromClient.convertToTitleCase();
+      Message messageToClient = messageFromClient;
+      messageToClient.send(connectionSocket);
 
       // Closes the TCP connection between the client and the server
       close(connectionSocket);
