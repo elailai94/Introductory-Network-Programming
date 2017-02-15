@@ -135,6 +135,35 @@ void *handleSendingRequests(void *arg) {
       } // if
    } // while
 
+   while (!messagesNotSent.empty()) {
+      // Removes a message from the messages not sent queue and
+      // writes it out to the client socket
+      Message messageToServer = messagesNotSent.front();
+      pthread_mutex_lock(&messagesNotSentMutex);
+      messagesNotSent.pop();
+      pthread_mutex_unlock(&messagesNotSentMutex);
+      messageToServer.send(clientSocket);
+      pthread_mutex_lock(&messagesNotReceivedMutex);
+      messagesNotReceived += 1;
+      pthread_mutex_unlock(&messagesNotReceivedMutex);
+
+      // Creates a message to receive data from the server and reads
+      // into it from the client socket
+      Message messageFromServer = Message("");
+      int result = 0;
+      Message::receive(clientSocket, messageFromServer, result);
+      if (result == 0) {
+         string titleCaseText = messageFromServer.getText();
+         cout << "Server: " << titleCaseText << endl;
+         pthread_mutex_lock(&messagesNotReceivedMutex);
+         messagesNotReceived -= 1;
+         pthread_mutex_unlock(&messagesNotReceivedMutex);
+      } // if
+         
+      // Delays for two seconds between successive requests
+      sleep(2);
+   } // while
+
    // Terminates the current thread
    pthread_exit(0);
 } // handleSendingRequests
@@ -146,12 +175,16 @@ void *handleReceivingReplies(void *arg) {
    while (!isEOF) {
       // Creates a message to receive data from the server and reads
       // into it from the client socket
-      Message messageFromServer = Message::receive(clientSocket);
-      string titleCaseText = messageFromServer.getText();
-      cout << "Server: " << titleCaseText << endl;
-      //pthread_mutex_lock(&messagesNotReceivedMutex);
-      //messagesNotReceived -= 1;
-      //pthread_mutex_unlock(&messagesNotReceivedMutex);
+      Message messageFromServer = Message("");
+      int result = 0;
+      Message::receive(clientSocket, messageFromServer, result);
+      if (result == 0) {
+         string titleCaseText = messageFromServer.getText();
+         cout << "Server: " << titleCaseText << endl;
+         pthread_mutex_lock(&messagesNotReceivedMutex);
+         messagesNotReceived -= 1;
+         pthread_mutex_unlock(&messagesNotReceivedMutex);
+      } // if
    } // while
 
    // A client should wait to receive the server's reply to the last request sent
@@ -173,6 +206,7 @@ void *handleReceivingReplies(void *arg) {
 int main() {
    pthread_t readingInputThread;
    pthread_t sendingRequestsThread;
+   pthread_t receivingRepliesThread;
 
    // Checks the number and formats of the environment variables passed
    checkEnvironmentVariables();
@@ -193,7 +227,6 @@ int main() {
       exit(-1);
    } // if
 /*
-   pthread_t receivingRepliesThread;
    // Creates a new thread to handle receiving replies from the server
    result = pthread_create(&receivingRepliesThread, 0, handleReceivingReplies,
       (void *) clientSocket);
