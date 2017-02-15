@@ -109,7 +109,7 @@ int main() {
    while (true) {
       readSockets = allSockets;
 
-      // Checks if 
+      // Checks if some of the sockets are ready to be read from
       int result = select(maxSocket + 1, &readSockets, 0, 0, 0);
       if (result < 0) {
          continue;
@@ -136,6 +136,8 @@ int main() {
             // Adds the connection socket to the all sockets set
             FD_SET(connectionSocket, &allSockets);
 
+            // Sets the connection socket as the maximum socket so far
+            // if necessary
             if (connectionSocket > maxSocket) {
                maxSocket = connectionSocket;
             } // if
@@ -148,18 +150,20 @@ int main() {
             result = 0;
             Message::receive(i, messageFromClient, result);
             if (result < 0) {
-               // Closes the TCP connection between the client and the server
-               // 
+               // Closes the connection socket and removes it from the
+               // all sockets set
                close(i);
                FD_CLR(i, &allSockets);
                continue;
             } // if
 
-            // 
+            // Reads in the text and prints it on the server's standard
+            // output
             string clientText = messageFromClient.getText();
-            cout << clientText <<  endl;
+            cout << clientText << endl;
 
-            // 
+            // Converts the text to title case and writes it out to the
+            // connection socket
             messageFromClient.convertToTitleCase();
             Message messageToClient = messageFromClient;
             messageToClient.send(i);

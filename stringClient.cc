@@ -219,7 +219,7 @@ int main() {
       exit(-1);
    } // if
 */
-   // Closes the TCP connection between the client and the server
+   // Closes the client socket
    close(clientSocket);
 
    // Terminates the current thread
