@@ -1,9 +1,8 @@
 //=============================================================================
-// CS 454 Assignment 2
+// Introductory Network Programming
 //
 // @description: Module for providing functions to work with Message objects
-// @author: Ah Hoe Lai
-// @userid: ahlai
+// @author: Elisha Lai
 // @version: 1.0 09/02/2017
 //=============================================================================
 
