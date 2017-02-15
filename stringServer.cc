@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <cstring>
 #include <unistd.h>
 #include <netdb.h>
 #include <netinet/in.h>
