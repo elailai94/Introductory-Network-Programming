@@ -105,7 +105,8 @@ int main() {
       if (connectionSocket < 0) {
          continue;
       } // if
-
+      
+      while (true) {
       // Creates a message to receive data from the client and reads
       // into it from the connection socket
       Message messageFromClient = Message("");
@@ -119,7 +120,10 @@ int main() {
          messageFromClient.convertToTitleCase();
          Message messageToClient = messageFromClient;
          messageToClient.send(connectionSocket);
+      } else {
+         break;
       } // if
+      }
 
       // Closes the TCP connection between the client and the server
       close(connectionSocket);

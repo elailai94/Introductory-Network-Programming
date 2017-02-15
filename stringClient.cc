@@ -128,15 +128,6 @@ void *handleSendingRequests(void *arg) {
             messagesNotReceived -= 1;
             pthread_mutex_unlock(&messagesNotReceivedMutex);
          } // if
-
-/*
-         Message messageFromServer = Message::receive(clientSocket);
-         string titleCaseText = messageFromServer.getText();
-         cout << "Server: " << titleCaseText << endl;
-         pthread_mutex_lock(&messagesNotReceivedMutex);
-         messagesNotReceived -= 1;
-         pthread_mutex_unlock(&messagesNotReceivedMutex);
-*/
          
          // Delays for two seconds between successive requests
          sleep(2);
