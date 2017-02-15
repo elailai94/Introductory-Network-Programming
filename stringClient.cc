@@ -8,8 +8,7 @@
 //=============================================================================
 
 #include <iostream>
-#include <cstdlib>
-#include <cstring>
+//#include <cstdlib>
 #include <queue>
 #include <unistd.h>
 #include <pthread.h>
@@ -38,6 +37,47 @@ void checkEnvironmentVariables() {
       exit(-1);
    } // if
 } // checkEnvironmentVariables
+
+// Sets up the client socket
+long setUpClientSocket() {
+   // Creates the client socket
+   long clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+   if (clientSocket < 0) {
+      exit(-1);
+   } // if
+
+   // Gets the environment variables passed
+   char* serverAddress = getenv("SERVER_ADDRESS");
+   char* serverPort = getenv("SERVER_PORT");
+   
+   // Sets up the server address hints and results to perform the DNS
+   // lookup on the server's host name to obtain the server's IP address
+   struct addrinfo serverAddressHints;
+   memset(&serverAddressHints, 0, sizeof(serverAddressHints));
+   serverAddressHints.ai_family = AF_INET;
+   serverAddressHints.ai_socktype = SOCK_STREAM;
+   struct addrinfo* serverAddressResults;
+   
+   // Performs a DNS lookup on the server's host name to obtain the
+   // server's IP address
+   int result = getaddrinfo(serverAddress, serverPort,
+      &serverAddressHints, &serverAddressResults);
+   if (result != 0) {
+      exit(-1);
+   } // if
+
+   // Initiates the TCP connection between the client and the server
+   result = connect(clientSocket, serverAddressResults->ai_addr,
+      serverAddressResults->ai_addrlen);
+   if (result < 0) {
+      exit(-1);
+   } // if
+
+   // Frees up memory allocated for the server address results
+   freeaddrinfo(serverAddressResults);
+
+   return clientSocket;
+} //setUpSocket
 
 // Handles reading input from the user
 void *handleReadingInput(void *arg) {
@@ -123,51 +163,20 @@ void *handleReceivingReplies(void *arg) {
 } // handleReceivingReplies
 
 int main() {
+   pthread_t readingInputThread;
+   pthread_t sendingRequestsThread;
+
    // Checks the number and formats of the environment variables passed
    checkEnvironmentVariables();
 
-   // Creates the client socket
-   long clientSocket = socket(AF_INET, SOCK_STREAM, 0);
-   if (clientSocket < 0) {
-      exit(-1);
-   } // if
-
-   char* serverAddress = getenv("SERVER_ADDRESS");
-   char* serverPort = getenv("SERVER_PORT");
-   
-   struct addrinfo serverAddressHints;
-   memset(&serverAddressHints, 0, sizeof(serverAddressHints));
-   serverAddressHints.ai_family = AF_INET;
-   serverAddressHints.ai_socktype = SOCK_STREAM;
-   
-   struct addrinfo* serverAddressResults;
-   
-   // Performs a DNS lookup on the server's host name to obtain the
-   // server's IP address
-   int result = getaddrinfo(serverAddress, serverPort,
-      &serverAddressHints, &serverAddressResults);
-   if (result != 0) {
-      exit(-1);
-   } // if
-
-   // Initiates the TCP connection between the client and the server
-   result = connect(clientSocket, serverAddressResults->ai_addr,
-      serverAddressResults->ai_addrlen);
-   if (result < 0) {
-      exit(-1);
-   } // if
-
-   freeaddrinfo(serverAddressResults);
-
-   pthread_t readingInputThread;
+   // Sets up the client socket
+   long clientSocket = setUpClientSocket();
 
    // Creates a new thread to handle reading input from the user
-   result = pthread_create(&readingInputThread, 0, handleReadingInput, 0);
+   int result = pthread_create(&readingInputThread, 0, handleReadingInput, 0);
    if (result != 0) {
       exit(-1);
    } // if
-
-   pthread_t sendingRequestsThread;
 
    // Creates a new thread to handle sending requests to the server
    result = pthread_create(&sendingRequestsThread, 0, handleSendingRequests,

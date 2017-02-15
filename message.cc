@@ -71,6 +71,73 @@ Message::Message(string text)
 string Message::getText() {
    return text;
 } // getText
+/*
+string StringServer::title_case(string str) {
+  for (unsigned int i = 0; i < str.length(); i++) {
+    if (i == 0 || str[i-1] == ' ' || str[i-1] == '\t') {
+      str[i] = toupper(str[i]);
+    } else {
+      str[i] = tolower(str[i]);
+    }
+  }
+  return str;
+}
+
+void cap_first_letter(std::string &str)
+{
+   bool is_prev_space = true;
+
+   for(size_t i = 0; i < str.size(); i++)
+   {
+      if(isspace(str[i]))
+      {
+         // no need to mutate any space characters
+         is_prev_space = true;
+         continue;
+      }
+
+      if(is_prev_space)
+      {
+         // previous character was a space but the current one isn't, so turn the current character to upper case
+         str[i] = toupper(str[i]);
+      }
+      else
+      {
+         str[i] = tolower(str[i]);
+      }
+
+      is_prev_space = false;
+   }
+}
+
+void titleCase(string &str) {
+    if (str.empty()) return;
+
+    bool titleCasedWord = false; // whether or not a word in the string has been title cased
+
+    // Convert everything to lower case to begin
+    for (unsigned int i = 0; i < str.length(); i++) str[i] = tolower(str[i]);
+
+    for (unsigned int i = 0; i < str.length(); i++) {
+
+        if (isspace(str[i])) {
+            titleCasedWord = false;
+            continue;
+        }
+
+        if (titleCasedWord == false && isalpha(str[i])) {
+            str[i] = toupper(str[i]);
+            titleCasedWord = true;
+        }
+    }
+} // titleCase
+*/
+// See interface (header file)
+void Message::convertToTitleCase() {
+   //for (int i = 0; i < count; ++i) {
+   //   /* code */
+   //} // for
+} // convertToTitleCase
 
 // See interface (header file)
 void Message::send(int dataTransferSocket) {

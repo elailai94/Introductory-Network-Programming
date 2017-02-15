@@ -39,13 +39,18 @@ public:
    // Returns the text
    std::string getText();
 
+   // Converts the text to title case by capitalizing the first
+   // character of every word and converting the rest of the word
+   // to lower case
+   void convertToTitleCase();
+
    // Creates a message to send data and writes it out to the data
    // transfer socket
    void send(int dataTransferSocket);
 
    // Creates a message to receive data and reads into it from the data
    // transfer socket
-   static Message receive(int dataTransferSocket);
+   static Message receive(int dataTransferSocket); 
 };
 
 #endif

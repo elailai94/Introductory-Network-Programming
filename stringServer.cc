@@ -8,11 +8,11 @@
 //=============================================================================
 
 #include <iostream>
-#include <cstdlib>
-#include <cstring>
+//#include <cstdlib>
 #include <unistd.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <sys/param.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include "message.h"
@@ -21,84 +21,102 @@ using namespace std;
 
 // Returns the server address
 string getServerAddress() {
-   char hostname[128];
-
+   char hostname[MAXHOSTNAMELEN] = {0};
    gethostname(hostname, sizeof(hostname));
    return string(hostname);
 } // getServerAddress
 
 // Returns the server port
-int getServerPort(const int welcomeSocket) {
+int getServerPort(int welcomeSocket) {
    struct sockaddr_in serverAddress;
    socklen_t serverAddressLength = sizeof(serverAddress);
-   const int result = getsockname(welcomeSocket, (struct sockaddr*) &serverAddress, &serverAddressLength);
+   
+   int result = getsockname(welcomeSocket, (struct sockaddr*) &serverAddress,
+      &serverAddressLength);
    if (result < 0) {
-      cerr << "ERROR: " << endl;
       exit(-1);
    } // if
+
    return ntohs(serverAddress.sin_port);
 } // getServerPort
 
-int main() {
-   // Creates the server TCP socket
-   const int welcomeSocket = socket(AF_INET, SOCK_STREAM, 0);
+// Sets up the welcome socket
+int setUpWelcomeSocket() {
+   // Creates the welcome socket
+   int welcomeSocket = socket(AF_INET, SOCK_STREAM, 0);
    if (welcomeSocket < 0) {
-      cerr << "ERROR: " << endl;
       exit(-1);
    } // if
 
-   // Get next available port
-   struct addrinfo hints;
-   memset(&hints, 0, sizeof(hints));
-   hints.ai_family = AF_INET;  // use IPv4 or IPv6, whichever
-   hints.ai_socktype = SOCK_STREAM;
-   hints.ai_flags = AI_PASSIVE;
-   struct addrinfo* res;
-   int result = getaddrinfo(NULL, "0", &hints, &res);
+   // Sets up the server address hints and results to get the server's
+   // IP address and the next available port
+   struct addrinfo serverAddressHints;
+   memset(&serverAddressHints, 0, sizeof(serverAddressHints));
+   serverAddressHints.ai_family = AF_INET;
+   serverAddressHints.ai_socktype = SOCK_STREAM;
+   serverAddressHints.ai_flags = AI_PASSIVE;
+   struct addrinfo* serverAddressResults;
+
+   // Gets the server's IP address and the next available port
+   int result = getaddrinfo(NULL, "0", &serverAddressHints,
+      &serverAddressResults);
    if (result != 0) {
-      cerr << "ERROR: DNS lookup failed" << endl;
       exit(-1);
    } // if
 
-   // Bind
-   result = bind(welcomeSocket, res->ai_addr, res->ai_addrlen);
+   // Binds the socket to the server's IP address and the next
+   // available port
+   result = bind(welcomeSocket, serverAddressResults->ai_addr,
+      serverAddressResults->ai_addrlen);
    if (result < 0) {
-      cerr << "ERROR: " << endl;
       exit(-1);
    } // if
 
-   
+   // Frees up memory allocated for the server address results
+   freeaddrinfo(serverAddressResults);
+
+   // Listens for TCP connection requests from the client
+   result = listen(welcomeSocket, SOMAXCONN);
+   if (result < 0) {
+      exit(-1);
+   } // if
+
+   // Prints the server address and the server port on the server's
+   // standard output
    cout << "SERVER_ADDRESS " << getServerAddress() << endl;
    cout << "SERVER_PORT " << getServerPort(welcomeSocket) << endl;
 
-   // Listen
-   result = listen(welcomeSocket, 5);
-   if (result < 0) {
-      cerr << "ERROR: " << endl;
-      exit(-1);
-   } // if
+   return welcomeSocket;
+} // setUpWelcomeSocket
+
+int main() {
+   // Sets up the welcome socket
+   int welcomeSocket = setUpWelcomeSocket();
 
    while (true) {
-      // Accept
       struct sockaddr clientAddress;
       socklen_t clientAddressLength = sizeof(clientAddress);
-      const int connectionSocket = accept(welcomeSocket, &clientAddress, &clientAddressLength);
+
+      // Creates the connection socket when a connection is made to the
+      // welcome socket
+      int connectionSocket = accept(welcomeSocket, &clientAddress,
+         &clientAddressLength);
       if (connectionSocket < 0) {
-         cerr << "ERROR: " << endl;
          continue;
       } // if
 
+      // Creates a packet to receive data from the client and reads into
+      // it from the connection socket
       Message messageFromClient = Message::receive(connectionSocket);
-      string clientString = messageFromClient.getText();
-      cout << clientString << endl;
+      string clientText = messageFromClient.getText();
+      cout << clientText << endl;
 
       //Message messageToClient = Message("Hello, World!");
 
-
+      // Closes the TCP connection between the client and the server
       close(connectionSocket);
    } // while
 
-   freeaddrinfo(res);
-   // Closes the TCP connection between the client and the server
+   // Closes the welcome socket
    close(welcomeSocket);
 } // main
