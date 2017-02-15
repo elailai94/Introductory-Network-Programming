@@ -27,12 +27,6 @@ class Message {
    // Reads the length of the text from the buffer
    static int readTextLength(char* buffer);
 
-   // Reads a string from the buffer
-   static char* readText(char* buffer, int length);
-
-   // Parses data received
-   static Message parseData(char *data);
-
 public:
    Message(std::string text); // Constructor
 
@@ -50,7 +44,8 @@ public:
 
    // Creates a message to receive data and reads into it from the data
    // transfer socket
-   static Message receive(int dataTransferSocket); 
+   static void receive(int dataTransferSocket, Message &parsedMessage,
+      int &result);
 };
 
 #endif

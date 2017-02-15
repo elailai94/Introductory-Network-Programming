@@ -116,12 +116,27 @@ void *handleSendingRequests(void *arg) {
          messagesNotReceived += 1;
          pthread_mutex_unlock(&messagesNotReceivedMutex);
 
+         // Creates a message to receive data from the server and reads
+         // into it from the client socket
+         Message messageFromServer = Message("");
+         int result = 0;
+         Message::receive(clientSocket, messageFromServer, result);
+         if (result == 0) {
+            string titleCaseText = messageFromServer.getText();
+            cout << "Server: " << titleCaseText << endl;
+            pthread_mutex_lock(&messagesNotReceivedMutex);
+            messagesNotReceived -= 1;
+            pthread_mutex_unlock(&messagesNotReceivedMutex);
+         } // if
+
+/*
          Message messageFromServer = Message::receive(clientSocket);
          string titleCaseText = messageFromServer.getText();
          cout << "Server: " << titleCaseText << endl;
          pthread_mutex_lock(&messagesNotReceivedMutex);
          messagesNotReceived -= 1;
          pthread_mutex_unlock(&messagesNotReceivedMutex);
+*/
          
          // Delays for two seconds between successive requests
          sleep(2);
@@ -131,7 +146,7 @@ void *handleSendingRequests(void *arg) {
    // Terminates the current thread
    pthread_exit(0);
 } // handleSendingRequests
-
+/*
 // Handles receiving replies from the server
 void *handleReceivingReplies(void *arg) {
    long clientSocket = (long) arg;
@@ -149,7 +164,7 @@ void *handleReceivingReplies(void *arg) {
 
    // A client should wait to receive the server's reply to the last request sent
    // by the client to the server
-   /*pthread_mutex_lock(&messagesNotReceivedMutex);
+   pthread_mutex_lock(&messagesNotReceivedMutex);
    for (int i = messagesNotReceived; i > 0; --i) {
       // 
       Message messageFromServer = Message::receive(clientSocket);
@@ -157,12 +172,12 @@ void *handleReceivingReplies(void *arg) {
       cout << "Server: " << titleCaseText << endl;
    } // for
    pthread_mutex_unlock(&messagesNotReceivedMutex);
-   */
+   
 
    // Terminates the current thread
    pthread_exit(0);
 } // handleReceivingReplies
-
+*/
 int main() {
    pthread_t readingInputThread;
    pthread_t sendingRequestsThread;

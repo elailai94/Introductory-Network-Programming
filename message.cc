@@ -47,23 +47,6 @@ int Message::readTextLength(char *buffer) {
 } // readTextLength
 
 // See interface (header file)
-char* Message::readText(char *buffer, int textLength) {
-   char* text = new char[textLength]();
-   strcpy(text, buffer + sizeof(int));
-   return text;
-} // getString
-
-// See interface (header file)
-Message Message::parseData(char* data) {
-   int textLength = readTextLength(data);
-   cout << textLength << endl;
-   char* text = readText(data, textLength);
-   Message parsedMessage = Message(string(text));
-   delete[] text;
-   return parsedMessage;
-} // parseData
-
-// See interface (header file)
 Message::Message(string text)
    : text(text) {} // Constructor
 
@@ -106,21 +89,36 @@ void Message::send(int dataTransferSocket) {
 } // send
 
 // See interface (header file)
-Message Message::receive(int dataTransferSocket) {
-   char textLength[sizeof(int)]; 
-   int num_of_bytes_received =
-      ::recv(dataTransferSocket, textLength, sizeof(int), 0);
-   int i = readTextLength(textLength);
-   char text[i];
-   num_of_bytes_received =
-      ::recv(dataTransferSocket, text, i, 0);
+void Message::receive(int dataTransferSocket, Message &parsedMessage,
+   int &result) {
+   char textLengthBuffer[sizeof(int)] = {0};
+   int numOfBytesReceived = 
+      ::recv(dataTransferSocket, textLengthBuffer, sizeof(int), 0);
+   if (numOfBytesReceived < 0 || numOfBytesReceived == 0) {
+      result = -1;
+      return;
+   } // if
+   int textLength = readTextLength(textLengthBuffer);
 
-   //char* data = new char[sizeof(int) + i]();
-   //strcpy(data, textLength);
-   //strcpy(data + sizeof(int), text);
+   char textBuffer[textLength];
+   int totalNumOfBytesData = textLength;
+   int numOfBytesLeft = totalNumOfBytesData;
+   int totalNumOfBytesReceived = 0;
 
-   //Message parsedMessage = parseData(data);
-   //delete[] data;
-   Message parsedMessage = Message(string(text));
-   return parsedMessage;
+   while (totalNumOfBytesReceived < totalNumOfBytesData) {
+      numOfBytesReceived =
+         ::recv(dataTransferSocket, textBuffer + totalNumOfBytesReceived,
+            numOfBytesLeft, 0);
+      if (numOfBytesReceived < 0 || numOfBytesReceived == 0) {
+         result = -1;
+         return;
+      } // if
+
+      totalNumOfBytesReceived += numOfBytesReceived;
+      numOfBytesLeft -= numOfBytesReceived;
+   } // while
+
+   string text = string(textBuffer);
+   parsedMessage.text = text;
+   //Message parsedMessage = Message(string(text));
 } // receive
