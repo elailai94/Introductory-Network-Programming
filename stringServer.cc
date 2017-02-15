@@ -43,6 +43,9 @@ int getServerPort(int welcomeSocket) {
 
 // Sets up the welcome socket
 int setUpWelcomeSocket() {
+   struct addrinfo serverAddressHints;
+   struct addrinfo* serverAddressResults;
+
    // Creates the welcome socket
    int welcomeSocket = socket(AF_INET, SOCK_STREAM, 0);
    if (welcomeSocket < 0) {
@@ -51,13 +54,11 @@ int setUpWelcomeSocket() {
 
    // Sets up the server address hints and results to get the server's
    // IP address and the next available port
-   struct addrinfo serverAddressHints;
    memset(&serverAddressHints, 0, sizeof(serverAddressHints));
    serverAddressHints.ai_family = AF_INET;
    serverAddressHints.ai_socktype = SOCK_STREAM;
    serverAddressHints.ai_flags = AI_PASSIVE;
-   struct addrinfo* serverAddressResults;
-
+   
    // Gets the server's IP address and the next available port
    int result = getaddrinfo(NULL, "0", &serverAddressHints,
       &serverAddressResults);
@@ -91,42 +92,80 @@ int setUpWelcomeSocket() {
 } // setUpWelcomeSocket
 
 int main() {
-   // Sets up the welcome socket
+   fd_set allSockets;
+   fd_set readSockets;
+
+   // Clears all entries from the all sockets set and the read
+   // sockets set
+   FD_ZERO(&allSockets);
+   FD_ZERO(&readSockets);
+   
+   // Sets up the welcome socket, adds it to the all sockets set and
+   // sets it as the maximum socket so far
    int welcomeSocket = setUpWelcomeSocket();
+   FD_SET(welcomeSocket, &allSockets);
+   int maxSocket = welcomeSocket;
 
    while (true) {
-      struct sockaddr clientAddress;
-      socklen_t clientAddressLength = sizeof(clientAddress);
+      readSockets = allSockets;
 
-      // Creates the connection socket when a connection is made to the
-      // welcome socket
-      int connectionSocket = accept(welcomeSocket, &clientAddress,
-         &clientAddressLength);
-      if (connectionSocket < 0) {
+      // Checks if 
+      int result = select(maxSocket + 1, &readSockets, 0, 0, 0);
+      if (result < 0) {
          continue;
       } // if
-      
-      while (true) {
-      // Creates a message to receive data from the client and reads
-      // into it from the connection socket
-      Message messageFromClient = Message("");
-      int result = 0;
-      Message::receive(connectionSocket, messageFromClient, result);
-      if (result == 0) {
-         string clientText = messageFromClient.getText();
-         cout << clientText << endl;
 
-         // Writes it out to the connection socket
-         messageFromClient.convertToTitleCase();
-         Message messageToClient = messageFromClient;
-         messageToClient.send(connectionSocket);
-      } else {
-         break;
-      } // if
-      }
+      for (int i = 0; i <= maxSocket; ++i) {
+         if (!FD_ISSET(i, &readSockets)) {
+            continue;
+         } // if
+            
+         if (i == welcomeSocket) {
+            
+            struct sockaddr clientAddress;
+            socklen_t clientAddressLength = sizeof(clientAddress);
 
-      // Closes the TCP connection between the client and the server
-      close(connectionSocket);
+            // Creates the connection socket when a connection is made
+            // to the welcome socket
+            int connectionSocket = accept(welcomeSocket, &clientAddress,
+               &clientAddressLength);
+            if (connectionSocket < 0) {
+               continue;
+            } // if
+
+            // Adds the connection socket to the all sockets set
+            FD_SET(connectionSocket, &allSockets);
+
+            if (connectionSocket > maxSocket) {
+               maxSocket = connectionSocket;
+            } // if
+
+         } else {
+
+            // Creates a message to receive data from the client and
+            // reads into it from the connection socket
+            Message messageFromClient = Message("");
+            result = 0;
+            Message::receive(i, messageFromClient, result);
+            if (result < 0) {
+               // Closes the TCP connection between the client and the server
+               // 
+               close(i);
+               FD_CLR(i, &allSockets);
+               continue;
+            } // if
+
+            // 
+            string clientText = messageFromClient.getText();
+            cout << clientText <<  endl;
+
+            // 
+            messageFromClient.convertToTitleCase();
+            Message messageToClient = messageFromClient;
+            messageToClient.send(i);
+
+         } // if
+      } // for
    } // while
 
    // Closes the welcome socket

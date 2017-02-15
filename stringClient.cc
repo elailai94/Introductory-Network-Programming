@@ -41,6 +41,9 @@ void checkEnvironmentVariables() {
 
 // Sets up the client socket
 long setUpClientSocket() {
+   struct addrinfo serverAddressHints;
+   struct addrinfo* serverAddressResults;
+
    // Creates the client socket
    long clientSocket = socket(AF_INET, SOCK_STREAM, 0);
    if (clientSocket < 0) {
@@ -53,11 +56,9 @@ long setUpClientSocket() {
    
    // Sets up the server address hints and results to perform the DNS
    // lookup on the server's host name to obtain the server's IP address
-   struct addrinfo serverAddressHints;
    memset(&serverAddressHints, 0, sizeof(serverAddressHints));
    serverAddressHints.ai_family = AF_INET;
    serverAddressHints.ai_socktype = SOCK_STREAM;
-   struct addrinfo* serverAddressResults;
    
    // Performs a DNS lookup on the server's host name to obtain the
    // server's IP address
