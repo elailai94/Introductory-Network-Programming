@@ -1,10 +1,6 @@
-##==============================================================================
-## Introductory Network Programming
-##
-## @description: README file
-## @author: Elisha Lai
-## @version: 1.0 09/02/2017
-##==============================================================================
+# Introductory Network Programming
+### About
+This repository contains client and server programs to communicate between themselves. They are written entirely in C++.
 
 General Information
 
@@ -20,18 +16,3 @@ You can compile the source code for the programs by running: make
 
 - How To Clean Build?
 You can clean build by running: make clean
-
-Technical Information
-
-- Which Undergrad Machines Were Used To Built And Test The Programs?
-   ubuntu1404-012.student.cs.uwaterloo.ca (ran the client program)
-   ubuntu1404-012.student.cs.uwaterloo.ca (ran the server program)
-
-   ubuntu1404-002.student.cs.uwaterloo.ca (ran the client program)
-   ubuntu1404-012.student.cs.uwaterloo.ca (ran the server program)
-
-- What Is The Version Of make Used For The Makefile?
-The version of make that used for the Makefile is 3.81.
-
-- What Is The Version Of g++ Used To Compile The Programs?
-The version of g++ used to compile the programs is 4.9.4.
