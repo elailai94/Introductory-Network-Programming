@@ -24,7 +24,7 @@ class Message {
    char* getData();
 
    // Reads the length of the text from the buffer
-   static int readTextLength(char* buffer);
+   static unsigned int readTextLength(char* buffer);
 
 public:
    Message(std::string text); // Constructor

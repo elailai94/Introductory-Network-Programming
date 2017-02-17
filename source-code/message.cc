@@ -14,11 +14,11 @@ using namespace std;
 
 // See interface (header file)
 void Message::writeTextLength(char* buffer) {
-   int textLength = text.length() + 1;
-   buffer[0] = textLength >> 24;
-   buffer[1] = textLength >> 16;
-   buffer[2] = textLength >> 8;
-   buffer[3] = textLength;
+   unsigned int textLength = text.length() + 1;
+   buffer[0] = (textLength >> 24) & 0xFF;
+   buffer[1] = (textLength >> 16) & 0xFF;
+   buffer[2] = (textLength >> 8) & 0xFF;
+   buffer[3] = textLength & 0xFF;
 } // writeTextLength
 
 // See interface (header file)
@@ -28,7 +28,7 @@ void Message::writeText(char *buffer) {
 
 // See interface (header file)
 char* Message::getData() {
-   int bufferLength = sizeof(int) + text.length() + 1;
+   unsigned int bufferLength = sizeof(int) + text.length() + 1;
    char* buffer = new char[bufferLength]();
    writeTextLength(buffer);
    writeText(buffer);
@@ -36,11 +36,11 @@ char* Message::getData() {
 } // getData
 
 // See interface (header file)
-int Message::readTextLength(char *buffer) {
-   int textLength = buffer[0] << 24 | 
-                    buffer[1] << 16 |
-                    buffer[2] << 8  |
-                    buffer[3];
+unsigned int Message::readTextLength(char *buffer) {
+   unsigned int textLength = ((buffer[0] << 24) & 0xFF) | 
+                             ((buffer[1] << 16) & 0xFF) |
+                             ((buffer[2] << 8) & 0xFF)  |
+                             (buffer[3] & 0xFF);
    return textLength;
 } // readTextLength
 
@@ -67,9 +67,9 @@ void Message::convertToTitleCase() {
 // See interface (header file)
 void Message::send(int dataTransferSocket) {
    char* data = getData();
-   int totalNumOfBytesData = sizeof(int) + text.length() + 1;
-   int numOfBytesLeft = totalNumOfBytesData;
-   int totalNumOfBytesSent = 0;
+   unsigned int totalNumOfBytesData = sizeof(int) + text.length() + 1;
+   unsigned int numOfBytesLeft = totalNumOfBytesData;
+   unsigned int totalNumOfBytesSent = 0;
 
    while (totalNumOfBytesSent < totalNumOfBytesData) {
       int numOfBytesSent =
@@ -98,12 +98,12 @@ void Message::receive(int dataTransferSocket, Message &parsedMessage,
       return;
    } // if
    
-   int textLength = readTextLength(textLengthBuffer);
+   unsigned int textLength = readTextLength(textLengthBuffer);
 
    char textBuffer[textLength];
-   int totalNumOfBytesData = textLength;
-   int numOfBytesLeft = totalNumOfBytesData;
-   int totalNumOfBytesReceived = 0;
+   unsigned int totalNumOfBytesData = textLength;
+   unsigned int numOfBytesLeft = totalNumOfBytesData;
+   unsigned int totalNumOfBytesReceived = 0;
 
    while (totalNumOfBytesReceived < totalNumOfBytesData) {
       numOfBytesReceived =
